@@ -11,21 +11,16 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
+      - uses: actions/checkout@v3
         with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.PRIVATE_KEY }}
-          repository: satwareAG/skoolesi
+          fetch-depth: 0
           
       - name: Sync fork
-        uses: tgymnich/fork-sync@v1.4.5
-        with:
-          token: ${{ steps.generate_token.outputs.token }}
-          owner: satwareAG
-          base: main
-          head: main
-          merge_method: merge
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          
+          # Use PAT token for authentication
+          git remote add satwareag https://${{ secrets.PAT_TOKEN }}@github.com/satwareAG/skoolesi.git
+          git push satwareag main:main --force
