@@ -1,7 +1,7 @@
 # skoolesi - Autonomous AI Agent for SKOOL Communities
 
 <p align="center">
-  <img src="assets/skoolesi-logo.png" alt="skoolesi Logo" width="200"/>
+  <img src="assets/logo.jpg" alt="skoolesi Logo" width="200"/>
 </p>
 
 <p align="center">
