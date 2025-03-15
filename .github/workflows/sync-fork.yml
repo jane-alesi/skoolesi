@@ -5,19 +5,14 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 */12 * * *'  # Runs every 12 hours
-  workflow_dispatch:  # Allows manual triggering
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
 
 jobs:
-  sync-fork:
+  sync:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          
       - name: Generate token
         id: generate_token
         uses: tibdex/github-app-token@v1
@@ -26,11 +21,11 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
           repository: satwareAG/skoolesi
           
-      - name: Push to fork
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          # Use the token explicitly in the URL
-          git remote add fork https://x-access-token:${{ steps.generate_token.outputs.token }}@github.com/satwareAG/skoolesi.git
-          git fetch fork
-          git push --force fork HEAD:main
+      - name: Sync fork
+        uses: tgymnich/fork-sync@v1.4.5
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          owner: satwareAG
+          base: main
+          head: main
+          merge_method: merge
