@@ -13,32 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
       - name: Generate token
         id: generate_token
         uses: tibdex/github-app-token@v1
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
-          
-      - name: Checkout source
-        uses: actions/checkout@v3
-        with:
-          path: source
-          fetch-depth: 0
-          
-      - name: Checkout destination fork
-        uses: actions/checkout@v3
-        with:
           repository: satwareAG/skoolesi
-          path: destination
-          token: ${{ steps.generate_token.outputs.token }}
-          fetch-depth: 0
           
-      - name: Sync changes
+      - name: Push to satwareAG fork
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
-          cd destination
-          git remote add upstream https://github.com/jane-alesi/skoolesi.git
-          git fetch upstream
-          git checkout main
-          git merge upstream/main --allow-unrelated-histories -X theirs
-          git push origin main
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git remote add satwareag "https://x-access-token:${GH_TOKEN}@github.com/satwareAG/skoolesi.git"
+          git push satwareag main:main --force
