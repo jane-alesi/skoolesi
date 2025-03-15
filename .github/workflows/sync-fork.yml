@@ -1,26 +1,19 @@
-name: Sync Fork to satwareAG
+name: Sync Fork with Upstream
 
 on:
-  push:
-    branches:
-      - main
   schedule:
-    - cron: '0 */12 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:     # Allows manual triggering
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Sync with upstream
+        uses: dabreadman/sync-upstream-repo@v1.3.0
         with:
-          fetch-depth: 0
-          
-      - name: Sync fork
-        run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          
-          # Use PAT token for authentication
-          git remote add satwareag https://${{ secrets.PAT_TOKEN }}@github.com/satwareAG/skoolesi.git
-          git push satwareag main:main --force
+          upstream_repo: "https://github.com/jane-alesi/skoolesi.git"
+          upstream_branch: main
+          downstream_branch: main
+          token: ${{ secrets.PAT_TOKEN }}
+          sync_tags: false
